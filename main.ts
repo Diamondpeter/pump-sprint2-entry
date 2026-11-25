@@ -16,12 +16,12 @@
 //   - creator has not sold
 //   - price at most 1.5x the create price
 //   - at least 0.3 SOL of real reserves
-//   - first buy ~0.05 SOL, capped by the harness size cap (1% of real
+//   - first buy ~0.025 SOL, capped by the harness size cap (1% of real
 //     quote reserves); a buy only counts if it is at least 0.01 SOL
 // Pyramid: further 0.05 SOL adds (max ~0.25 SOL per coin) only while the
 // price is above the last buy and the position is not underwater.
-// Exits (sell everything): -15% hard stop; trailing stop armed at +150%,
-// selling on a 35% fall from the peak value; take-profit at 8x cost;
+// Exits (sell everything): -10% hard stop; trailing stop armed at +150%,
+// selling on a 25% fall from the peak value; take-profit at 8x cost;
 // max hold 5,000 slots; creator sells while held; no trade for 500 slots.
 // At most one entry per coin; at most 5 open positions (harness cap).
 
@@ -34,19 +34,19 @@ import {
   type SellInput,
 } from './vendor/makefun-bot.ts';
 
-// ---- Tunable strategy constants (FINAL v7: v1, tighter trail -25% from peak) ----
+// ---- Tunable strategy constants (FINAL v10: small first buy, -10% stop) ----
 const MIN_BUYERS = 7;
 const MAX_ENTRY_AGE_SLOTS = 8;
 const MAX_ENTRY_PRICE_X_NUM = 3n; // price <= 1.5x create price
 const MAX_ENTRY_PRICE_X_DEN = 2n;
 const MIN_REAL_SOL_LAMPORTS = (LAMPORTS_PER_SOL * 3n) / 10n; // 0.3 SOL
-const FIRST_BUY_LAMPORTS = LAMPORTS_PER_SOL / 20n; // 0.05 SOL
+const FIRST_BUY_LAMPORTS = LAMPORTS_PER_SOL / 40n; // 0.025 SOL
 const PYRAMID_BUY_LAMPORTS = LAMPORTS_PER_SOL / 20n; // 0.05 SOL
 const MAX_SPENT_PER_COIN_LAMPORTS = LAMPORTS_PER_SOL / 4n; // 0.25 SOL
 const MIN_BUY_LAMPORTS = LAMPORTS_PER_SOL / 100n; // 0.01 SOL (round-trip bar)
 const BUY_SLIPPAGE_BPS = 200;
 const SELL_SLIPPAGE_BPS = 10_000;
-const STOP_LOSS_NUM = 85n; // sell when value <= 85% of cost (-15%)
+const STOP_LOSS_NUM = 90n; // sell when value <= 90% of cost (-10%)
 const STOP_LOSS_DEN = 100n;
 const TRAIL_ARM_NUM = 5n; // arm the trailing stop at +150% (value >= 2.5x cost)
 const TRAIL_ARM_DEN = 2n;
